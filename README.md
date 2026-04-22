@@ -82,6 +82,12 @@ That means:
 
 If you want, Clerk can be made mandatory later so builds fail unless keys are present.
 
+When Clerk keys are configured, the app enables:
+
+- `/sign-in`
+- `/sign-up`
+- protected dashboard routes
+
 ## What works right now
 
 - the Next.js app builds successfully

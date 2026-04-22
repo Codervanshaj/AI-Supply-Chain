@@ -23,7 +23,14 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
     : Fragment;
 
   return (
-    <AuthProvider>
+    <AuthProvider
+      {...(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+        ? {
+            signInUrl: "/sign-in",
+            signUpUrl: "/sign-up",
+          }
+        : {})}
+    >
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </AuthProvider>
   );

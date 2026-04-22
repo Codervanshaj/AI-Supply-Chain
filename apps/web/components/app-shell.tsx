@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Bot, Boxes, ChartColumnIncreasing, Package, ShieldAlert, Truck, Wrench } from "lucide-react";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { cn } from "@supplychain/ui";
 
 const nav = [
@@ -65,11 +65,18 @@ export function AppShell({
                   <UserButton />
                 </SignedIn>
                 <SignedOut>
-                  <SignInButton mode="modal">
-                    <button className="rounded-2xl bg-slate-950 px-4 py-2 text-sm font-medium text-white">
-                      Sign in
-                    </button>
-                  </SignInButton>
+                  <div className="flex items-center gap-3">
+                    <SignInButton mode="modal">
+                      <button className="rounded-2xl bg-slate-950 px-4 py-2 text-sm font-medium text-white">
+                        Sign in
+                      </button>
+                    </SignInButton>
+                    <SignUpButton mode="modal">
+                      <button className="rounded-2xl bg-white px-4 py-2 text-sm font-medium text-slate-900 ring-1 ring-slate-200">
+                        Create account
+                      </button>
+                    </SignUpButton>
+                  </div>
                 </SignedOut>
               </>
             ) : (
