@@ -1,17 +1,15 @@
 from redis import Redis
-from rq import Worker
-from rq.connections import connections
+from rq import Queue, Worker
 
 from worker.config import settings
 
 
 def main() -> None:
     redis = Redis.from_url(settings.redis_url)
-    with Connection(redis):
-        worker = Worker([settings.worker_queue])
-        worker.work(with_scheduler=True)
+    queue = Queue(settings.worker_queue, connection=redis)
+    worker = Worker([queue], connection=redis)
+    worker.work(with_scheduler=True)
 
 
 if __name__ == "__main__":
     main()
-
