@@ -1,0 +1,22 @@
+{
+  "name": "supplychain-ai-saas",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/web",
+    "packages/ui",
+    "packages/types"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace @supplychain/web",
+    "build:web": "npm run build --workspace @supplychain/web",
+    "lint:web": "npm run lint --workspace @supplychain/web",
+    "test:web": "npm run test --workspace @supplychain/web",
+    "typecheck:web": "npm run typecheck --workspace @supplychain/web"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  }
+}
+

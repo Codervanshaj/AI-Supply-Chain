@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "plugins": [{ "name": "next" }],
+    "types": ["vitest/globals"],
+    "paths": {
+      "@/*": ["./*"],
+      "@supplychain/ui/*": ["../../packages/ui/src/*"],
+      "@supplychain/types/*": ["../../packages/types/src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": ["node_modules"]
+}

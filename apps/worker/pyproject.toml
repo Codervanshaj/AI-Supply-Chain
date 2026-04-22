@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=75.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "supplychain-worker"
+version = "0.1.0"
+description = "Background worker for supply chain optimization tasks"
+requires-python = ">=3.13"
+dependencies = [
+  "httpx>=0.28.1",
+  "pydantic-settings>=2.8.1",
+  "redis>=5.2.1",
+  "rq>=2.1.0"
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3.5", "ruff>=0.11.2"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["worker*"]
+
