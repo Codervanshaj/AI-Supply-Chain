@@ -1,5 +1,6 @@
 from redis import Redis
-from rq import Connection, Worker
+from rq import Worker
+from rq.connections import Connection
 
 from worker.config import settings
 
