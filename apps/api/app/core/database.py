@@ -11,7 +11,7 @@ class Base(DeclarativeBase):
     pass
 
 
-engine = create_engine(settings.database_url, future=True, pool_pre_ping=True)
+engine = create_engine(settings.sqlalchemy_database_url, future=True, pool_pre_ping=True)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, expire_on_commit=False)
 
 
@@ -34,4 +34,3 @@ def session_scope() -> Generator[Session, None, None]:
         raise
     finally:
         session.close()
-
