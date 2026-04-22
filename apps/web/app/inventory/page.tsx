@@ -1,16 +1,46 @@
 import { AppShell } from "@/components/app-shell";
-import { Card, CardDescription, CardTitle } from "@supplychain/ui";
+import { InventoryTable } from "@/components/tables";
+import { getInventoryRecommendations } from "@/lib/api";
+import { Card, CardDescription, CardTitle, MetricCard } from "@supplychain/ui";
 
-export default function InventoryPage() {
+export default async function InventoryPage() {
+  const inventory = await getInventoryRecommendations();
+  const critical = inventory.filter((item) => item.urgency === "critical").length;
+
   return (
     <AppShell currentPath="/inventory">
-      <Card className="space-y-3">
-        <CardTitle>Inventory optimization</CardTitle>
-        <CardDescription>
-          Reorder point calculations, safety stock, EOQ, and projected stockout monitoring are exposed through this module.
-        </CardDescription>
-      </Card>
+      <div className="space-y-6">
+        <div className="grid gap-4 md:grid-cols-3">
+          <MetricCard
+            title="Recommendations"
+            value={String(inventory.length)}
+            delta="Live queue"
+            description="Open reorder recommendations from the optimization service."
+            tone="info"
+          />
+          <MetricCard
+            title="Critical SKUs"
+            value={String(critical)}
+            delta="Needs action"
+            description="Items likely to stock out inside the lead-time window."
+            tone="critical"
+          />
+          <MetricCard
+            title="Average confidence"
+            value={`${Math.round((inventory.reduce((sum, item) => sum + item.confidence, 0) / Math.max(inventory.length, 1)) * 100)}%`}
+            delta="Model backed"
+            description="Confidence attached to recommendation quality."
+            tone="success"
+          />
+        </div>
+        <Card className="space-y-3">
+          <CardTitle>Inventory optimization</CardTitle>
+          <CardDescription>
+            Reorder recommendations are now live on this page instead of placeholder content.
+          </CardDescription>
+        </Card>
+        <InventoryTable rows={inventory} />
+      </div>
     </AppShell>
   );
 }
-

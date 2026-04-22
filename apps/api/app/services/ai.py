@@ -37,7 +37,7 @@ def _fallback_answer(query: str, context: dict) -> str:
     ).strip()
 
 
-def answer_query(session: Session, org_slug: str, user_id: str, payload: AIQueryRequest) -> str:
+def answer_query(session: Session, org_slug: str, user_id: str, payload: AIQueryRequest) -> tuple[str, str]:
     context = build_ai_context(session, org_slug)
     org = get_org(session, org_slug)
     conversation = AIConversation(org_id=org.id, user_id=user_id, title=payload.query[:80])
@@ -46,6 +46,7 @@ def answer_query(session: Session, org_slug: str, user_id: str, payload: AIQuery
     session.add(AIMessage(conversation_id=conversation.id, role="user", content=payload.query))
 
     answer = _fallback_answer(payload.query, context)
+    mode = "fallback"
     if settings.openai_api_key:
         client = OpenAI(api_key=settings.openai_api_key)
         response = client.responses.create(
@@ -75,8 +76,9 @@ def answer_query(session: Session, org_slug: str, user_id: str, payload: AIQuery
             ],
         )
         answer = getattr(response, "output_text", None) or answer
+        if getattr(response, "output_text", None):
+            mode = "openai"
 
     session.add(AIMessage(conversation_id=conversation.id, role="assistant", content=answer))
     session.commit()
-    return answer
-
+    return answer, mode

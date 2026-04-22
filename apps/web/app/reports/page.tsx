@@ -1,16 +1,33 @@
 import { AppShell } from "@/components/app-shell";
-import { Card, CardDescription, CardTitle } from "@supplychain/ui";
+import { getReports } from "@/lib/api";
+import { Badge, Card, CardDescription, CardTitle } from "@supplychain/ui";
 
-export default function ReportsPage() {
+export default async function ReportsPage() {
+  const reports = await getReports();
+
   return (
     <AppShell currentPath="/reports">
-      <Card className="space-y-3">
-        <CardTitle>Reports and exports</CardTitle>
-        <CardDescription>
-          Weekly AI summaries, operational report packs, and downloadable exports are queued and tracked here.
-        </CardDescription>
-      </Card>
+      <div className="space-y-6">
+        <Card className="space-y-3">
+          <CardTitle>Reports and exports</CardTitle>
+          <CardDescription>
+            Generated report packs and executive briefs from the backend reporting service.
+          </CardDescription>
+        </Card>
+        <div className="grid gap-4">
+          {reports.map((report) => (
+            <Card key={report.id} className="flex items-start justify-between gap-6">
+              <div className="space-y-2">
+                <CardTitle>{report.name}</CardTitle>
+                <CardDescription>
+                  {report.reportType} report • generated {report.generatedAt}
+                </CardDescription>
+              </div>
+              <Badge variant={report.status === "ready" ? "success" : "warning"}>{report.status}</Badge>
+            </Card>
+          ))}
+        </div>
+      </div>
     </AppShell>
   );
 }
-

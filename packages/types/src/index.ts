@@ -165,3 +165,40 @@ export interface AIQueryRequest {
   };
 }
 
+export interface ForecastDriver {
+  feature: string;
+  impact?: number;
+  explanation?: string;
+}
+
+export interface ForecastApiResult {
+  productId: string;
+  locationId: string;
+  horizonDays: number;
+  predictedDemand: number;
+  lowerBound: number;
+  upperBound: number;
+  modelType: string;
+  confidence: number;
+  explanation: {
+    drivers?: ForecastDriver[];
+    narrative?: string;
+  };
+}
+
+export interface ReportItem {
+  id: string;
+  name: string;
+  reportType: string;
+  generatedAt: string;
+  status: string;
+}
+
+export interface SystemStatus {
+  apiStatus: string;
+  environment: string;
+  openaiConfigured: boolean;
+  clerkConfigured: boolean;
+  databaseConfigured: boolean;
+  redisConfigured: boolean;
+}

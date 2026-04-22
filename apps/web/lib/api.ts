@@ -2,9 +2,12 @@ import type {
   AIQueryRequest,
   ApiEnvelope,
   AssetFailurePrediction,
+  ForecastApiResult,
   ReorderRecommendation,
+  ReportItem,
   ShipmentDelayPrediction,
   SupplierRiskScore,
+  SystemStatus,
 } from "@supplychain/types";
 
 const API_BASE_URL =
@@ -155,14 +158,107 @@ export async function getDashboardInsights() {
 }
 
 export async function queryAssistant(query: string) {
+  const payload: AIQueryRequest = { query };
+  return fetcher<{ answer: string; mode: string }>("/ai/query", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function getForecasts() {
   try {
-    const payload: AIQueryRequest = { query };
-    const data = await fetcher<{ answer: string }>("/ai/query", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
-    return data.answer;
+    return await fetcher<{ forecasts: ForecastApiResult[] }>("/forecast");
   } catch {
-    return "Inventory is the fastest lever right now: reorder VALVE-100, monitor Apex Components closely, and escalate SHP-1801 because inbound variability is compounding stockout risk.";
+    return {
+      forecasts: [
+        {
+          productId: "VALVE-100",
+          locationId: "BLR-DC",
+          horizonDays: 30,
+          predictedDemand: 166,
+          lowerBound: 151,
+          upperBound: 179,
+          modelType: "ensemble",
+          confidence: 0.87,
+          explanation: {
+            narrative: "Demand is rising with stable seasonal recurrence and higher regional pull-through.",
+            drivers: [
+              { feature: "seasonality", impact: 0.38, explanation: "Recurring weekly pattern remains strong." },
+              { feature: "recent trend", impact: 0.29, explanation: "Recent observed demand has trended upward." },
+            ],
+          },
+        },
+      ],
+    };
+  }
+}
+
+export async function getInventoryRecommendations() {
+  try {
+    return await fetcher<ReorderRecommendation[]>("/inventory/recommendations");
+  } catch {
+    return (await getDashboardInsights()).inventory;
+  }
+}
+
+export async function getSupplierRisk() {
+  try {
+    return await fetcher<SupplierRiskScore[]>("/suppliers/risk");
+  } catch {
+    return (await getDashboardInsights()).suppliers;
+  }
+}
+
+export async function getLogisticsPredictions() {
+  try {
+    return await fetcher<ShipmentDelayPrediction[]>("/logistics/predictions");
+  } catch {
+    return (await getDashboardInsights()).logistics;
+  }
+}
+
+export async function getMaintenancePredictions() {
+  try {
+    return await fetcher<AssetFailurePrediction[]>("/maintenance/predictions");
+  } catch {
+    return (await getDashboardInsights()).maintenance;
+  }
+}
+
+export async function getReports() {
+  try {
+    return await fetcher<ReportItem[]>("/reports");
+  } catch {
+    return [
+      {
+        id: "weekly-brief",
+        name: "Weekly Executive Brief",
+        reportType: "executive",
+        generatedAt: "2026-04-23",
+        status: "ready",
+      },
+      {
+        id: "risk-pack",
+        name: "Supplier Risk Deep Dive",
+        reportType: "supplier",
+        generatedAt: "2026-04-22",
+        status: "ready",
+      },
+    ];
+  }
+}
+
+export async function getSystemStatus() {
+  try {
+    return await fetcher<SystemStatus>("/health/status");
+  } catch {
+    return {
+      apiStatus: "degraded",
+      environment: "unknown",
+      openaiConfigured: false,
+      clerkConfigured: Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY),
+      databaseConfigured: false,
+      redisConfigured: false,
+    };
   }
 }

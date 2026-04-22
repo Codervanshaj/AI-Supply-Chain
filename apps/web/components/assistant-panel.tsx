@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Bot, Sparkles } from "lucide-react";
-import { Button, Card, CardDescription, CardTitle } from "@supplychain/ui";
+import { Badge, Button, Card, CardDescription, CardTitle } from "@supplychain/ui";
 import { queryAssistant } from "@/lib/api";
 
 const quickPrompts = [
@@ -13,25 +13,33 @@ const quickPrompts = [
 
 export function AssistantPanel() {
   const [messages, setMessages] = useState<
-    { role: "user" | "assistant"; content: string }[]
+    { role: "user" | "assistant"; content: string; mode?: string }[]
   >([
     {
       role: "assistant",
       content:
         "I can explain predictions, surface risks, summarize KPI movement, and recommend next actions across demand, inventory, suppliers, logistics, and maintenance.",
+      mode: "system",
     },
   ]);
   const [query, setQuery] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function submit(value: string) {
     if (!value.trim()) return;
     setSubmitting(true);
+    setError(null);
     setMessages((current) => [...current, { role: "user", content: value }]);
     setQuery("");
     try {
-      const answer = await queryAssistant(value);
-      setMessages((current) => [...current, { role: "assistant", content: answer }]);
+      const result = await queryAssistant(value);
+      setMessages((current) => [
+        ...current,
+        { role: "assistant", content: result.answer, mode: result.mode },
+      ]);
+    } catch {
+      setError("The assistant could not reach the live API. Check NEXT_PUBLIC_API_BASE_URL, Railway API health, and OPENAI_API_KEY.");
     } finally {
       setSubmitting(false);
     }
@@ -64,6 +72,11 @@ export function AssistantPanel() {
         ))}
       </div>
       <div className="flex-1 space-y-4 overflow-y-auto rounded-3xl bg-slate-50 p-4">
+        {error ? (
+          <div className="rounded-3xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+            {error}
+          </div>
+        ) : null}
         {messages.map((message, index) => (
           <div
             key={`${message.role}-${index}`}
@@ -73,6 +86,13 @@ export function AssistantPanel() {
                 : "ml-8 rounded-3xl bg-slate-900 p-4 text-sm text-white"
             }
           >
+            {message.role === "assistant" && message.mode ? (
+              <div className="mb-2">
+                <Badge variant={message.mode === "openai" ? "success" : message.mode === "fallback" ? "warning" : "info"}>
+                  {message.mode === "openai" ? "Live OpenAI" : message.mode === "fallback" ? "Fallback Mode" : "System"}
+                </Badge>
+              </div>
+            ) : null}
             {message.content}
           </div>
         ))}
@@ -91,4 +111,3 @@ export function AssistantPanel() {
     </Card>
   );
 }
-

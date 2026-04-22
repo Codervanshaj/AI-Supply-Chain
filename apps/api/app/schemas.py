@@ -22,6 +22,15 @@ class HealthResponse(BaseModel):
     environment: str
 
 
+class SystemStatusResponse(BaseModel):
+    apiStatus: str
+    environment: str
+    openaiConfigured: bool
+    clerkConfigured: bool
+    databaseConfigured: bool
+    redisConfigured: bool
+
+
 class MetricItem(BaseModel):
     title: str
     value: str
@@ -121,6 +130,7 @@ class AIQueryRequest(BaseModel):
 
 class AIQueryResponse(BaseModel):
     answer: str
+    mode: str
 
 
 class IngestionEventRequest(BaseModel):
@@ -134,4 +144,3 @@ class ReportItem(BaseModel):
     reportType: str
     generatedAt: date
     status: str
-

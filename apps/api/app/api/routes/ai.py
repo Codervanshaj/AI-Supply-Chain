@@ -10,6 +10,5 @@ router = APIRouter()
 
 @router.post("/query", response_model=ApiEnvelope[AIQueryResponse])
 def query_ai(payload: AIQueryRequest, db: Session = DbSession, context: RequestContext = RequestCtx):
-    answer = answer_query(db, context.org_slug, context.user_id, payload)
-    return ApiEnvelope(data=AIQueryResponse(answer=answer))
-
+    answer, mode = answer_query(db, context.org_slug, context.user_id, payload)
+    return ApiEnvelope(data=AIQueryResponse(answer=answer, mode=mode))

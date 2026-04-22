@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     redis_url: str = Field(default="redis://localhost:6379/0", alias="REDIS_URL")
     openai_api_key: str | None = Field(default=None, alias="OPENAI_API_KEY")
     openai_model: str = Field(default="gpt-5-mini", alias="OPENAI_MODEL")
+    clerk_secret_key: str | None = Field(default=None, alias="CLERK_SECRET_KEY")
     allowed_origins_raw: str = Field(
         default="http://localhost:3000",
         alias="ALLOWED_ORIGINS",
