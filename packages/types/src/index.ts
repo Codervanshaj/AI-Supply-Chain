@@ -173,7 +173,10 @@ export interface ForecastDriver {
 
 export interface ForecastApiResult {
   productId: string;
+  productName: string;
+  sku: string;
   locationId: string;
+  locationName: string;
   horizonDays: number;
   predictedDemand: number;
   lowerBound: number;

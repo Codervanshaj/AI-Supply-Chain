@@ -1,9 +1,10 @@
 from collections import defaultdict
 from statistics import mean
 
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
-from app.models import DemandObservation, ForecastRecord
+from app.models import DemandObservation, ForecastRecord, Location, Product
 from app.schemas import ForecastResult
 from app.services.analytics import get_org
 
@@ -11,6 +12,11 @@ from app.services.analytics import get_org
 def run_forecast_pipeline(session: Session, org_slug: str) -> list[ForecastResult]:
     org = get_org(session, org_slug)
     observations = session.query(DemandObservation).filter(DemandObservation.org_id == org.id).all()
+    products = {item.id: item for item in session.scalars(select(Product).where(Product.org_id == org.id)).all()}
+    locations = {item.id: item for item in session.scalars(select(Location).where(Location.org_id == org.id)).all()}
+
+    # Replace the current forecast set instead of stacking duplicate rows on every rerun.
+    session.execute(delete(ForecastRecord).where(ForecastRecord.org_id == org.id))
 
     grouped: dict[tuple[str, str], list[int]] = defaultdict(list)
     for observation in observations:
@@ -28,7 +34,10 @@ def run_forecast_pipeline(session: Session, org_slug: str) -> list[ForecastResul
         upper = prediction * 1.08
         result = ForecastResult(
             productId=product_id,
+            productName=products[product_id].name,
+            sku=products[product_id].sku,
             locationId=location_id,
+            locationName=locations[location_id].name,
             horizonDays=30,
             predictedDemand=round(prediction, 2),
             lowerBound=round(lower, 2),
@@ -61,4 +70,3 @@ def run_forecast_pipeline(session: Session, org_slug: str) -> list[ForecastResul
 
     session.commit()
     return results
-

@@ -45,11 +45,16 @@ def get_org(session: Session, org_slug: str) -> Organization:
 
 
 def get_forecasts(session: Session, org_id: str) -> list[ForecastResult]:
+    products = {item.id: item for item in session.scalars(select(Product).where(Product.org_id == org_id)).all()}
+    locations = {item.id: item for item in session.scalars(select(Location).where(Location.org_id == org_id)).all()}
     records = session.scalars(select(ForecastRecord).where(ForecastRecord.org_id == org_id)).all()
     return [
         ForecastResult(
             productId=record.product_id,
+            productName=products[record.product_id].name,
+            sku=products[record.product_id].sku,
             locationId=record.location_id,
+            locationName=locations[record.location_id].name,
             horizonDays=record.horizon_days,
             predictedDemand=record.predicted_demand,
             lowerBound=record.lower_bound,
@@ -263,4 +268,3 @@ def build_dashboard_insights(session: Session, org_slug: str) -> DashboardInsigh
         logistics=build_logistics_predictions(session, org.id),
         maintenance=build_maintenance_predictions(session, org.id),
     )
-

@@ -43,6 +43,12 @@ async function appFetcher<T>(path: string, init?: RequestInit): Promise<T> {
   }).catch(() => null);
 
   if (!response || !response.ok) {
+    const contentType = response?.headers.get("Content-Type") ?? "";
+    if (response && contentType.includes("application/json")) {
+      const payload = (await response.json().catch(() => null)) as ApiEnvelope<T> | null;
+      const message = payload?.errors?.[0]?.message;
+      throw new Error(message || `Failed to fetch ${path}`);
+    }
     const errorText = response ? await response.text().catch(() => "") : "";
     throw new Error(errorText || `Failed to fetch ${path}`);
   }
@@ -194,7 +200,10 @@ export async function getForecasts() {
       forecasts: [
         {
           productId: "VALVE-100",
+          productName: "Industrial Valve Assembly",
+          sku: "VALVE-100",
           locationId: "BLR-DC",
+          locationName: "Bangalore Distribution Hub",
           horizonDays: 30,
           predictedDemand: 166,
           lowerBound: 151,

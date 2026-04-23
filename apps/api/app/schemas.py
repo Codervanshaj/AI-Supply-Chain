@@ -109,7 +109,10 @@ class DashboardInsightsResponse(BaseModel):
 
 class ForecastResult(BaseModel):
     productId: str
+    productName: str
+    sku: str
     locationId: str
+    locationName: str
     horizonDays: int
     predictedDemand: float
     lowerBound: float

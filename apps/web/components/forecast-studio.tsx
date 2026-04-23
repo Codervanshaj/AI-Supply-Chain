@@ -75,8 +75,10 @@ export function ForecastStudio({ initialForecasts }: { initialForecasts: Forecas
             >
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <div className="font-medium text-white">{forecast.productId}</div>
-                  <div className="mt-1 text-sm text-slate-400">{forecast.modelType}</div>
+                  <div className="font-medium text-white">{forecast.productName}</div>
+                  <div className="mt-1 text-sm text-slate-400">
+                    {forecast.sku} • {forecast.locationName} • {forecast.modelType}
+                  </div>
                 </div>
                 <Badge variant="success">{Math.round(forecast.confidence * 100)}%</Badge>
               </div>

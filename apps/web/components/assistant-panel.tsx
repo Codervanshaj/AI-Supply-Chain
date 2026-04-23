@@ -38,8 +38,8 @@ export function AssistantPanel() {
         ...current,
         { role: "assistant", content: result.answer, mode: result.mode },
       ]);
-    } catch {
-      setError("The assistant could not reach the live API. Check NEXT_PUBLIC_API_BASE_URL, Railway API health, and OPENAI_API_KEY.");
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "The assistant could not reach the live API.");
     } finally {
       setSubmitting(false);
     }
