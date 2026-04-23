@@ -23,7 +23,8 @@ async function fetcher<T>(path: string, init?: RequestInit): Promise<T> {
   }).catch(() => null);
 
   if (!response || !response.ok) {
-    throw new Error(`Failed to fetch ${path}`);
+    const errorText = response ? await response.text().catch(() => "") : "";
+    throw new Error(errorText || `Failed to fetch ${path}`);
   }
 
   const payload = (await response.json()) as ApiEnvelope<T>;
@@ -277,4 +278,26 @@ export async function postIngestionEvent(payload: {
     method: "POST",
     body: JSON.stringify(payload),
   });
+}
+
+export async function uploadIngestionFile(file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(`${API_BASE_URL}/ingestion/upload`, {
+    method: "POST",
+    body: formData,
+  }).catch(() => null);
+
+  if (!response || !response.ok) {
+    const errorText = response ? await response.text().catch(() => "") : "";
+    throw new Error(errorText || "File upload failed.");
+  }
+
+  const payload = (await response.json()) as ApiEnvelope<{
+    filename: string;
+    bytes: number;
+    status: string;
+  }>;
+  return payload.data;
 }

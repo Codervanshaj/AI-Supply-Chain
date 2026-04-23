@@ -3,20 +3,37 @@
 @tailwind utilities;
 
 :root {
-  --font-sans: "Manrope", "Segoe UI", sans-serif;
-  color-scheme: light;
+  --font-sans: "Space Grotesk", "Segoe UI", sans-serif;
+  color-scheme: dark;
+  --page-bg: #07111f;
+  --panel-bg: rgba(10, 19, 35, 0.72);
+  --panel-border: rgba(148, 163, 184, 0.14);
+  --panel-soft: rgba(15, 23, 42, 0.72);
+  --text-main: #e5eefb;
+  --text-muted: #8ea0bd;
+  --accent: #37d0ff;
+  --accent-soft: rgba(55, 208, 255, 0.12);
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  min-height: 100%;
+  background:
+    radial-gradient(circle at 12% 12%, rgba(55, 208, 255, 0.18), transparent 24%),
+    radial-gradient(circle at 88% 18%, rgba(45, 212, 191, 0.12), transparent 20%),
+    linear-gradient(180deg, #08111d 0%, #0b1424 44%, #060d18 100%);
+}
+
 body {
   margin: 0;
   min-height: 100vh;
-  background: #f8fafc;
-  color: #0f172a;
+  background: transparent;
+  color: var(--text-main);
   font-family: var(--font-sans);
+  letter-spacing: -0.01em;
 }
 
 a {
@@ -30,3 +47,7 @@ textarea {
   font: inherit;
 }
 
+::selection {
+  background: rgba(55, 208, 255, 0.25);
+  color: white;
+}

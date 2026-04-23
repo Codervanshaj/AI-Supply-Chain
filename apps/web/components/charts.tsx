@@ -10,12 +10,12 @@ export function DemandChart({
   return (
     <ResponsiveContainer width="100%" height={260}>
       <AreaChart data={data}>
-        <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" />
-        <XAxis dataKey="period" stroke="#64748b" />
-        <YAxis stroke="#64748b" />
+        <CartesianGrid stroke="rgba(148,163,184,0.15)" strokeDasharray="3 3" />
+        <XAxis dataKey="period" stroke="#7e92b2" />
+        <YAxis stroke="#7e92b2" />
         <Tooltip />
-        <Area type="monotone" dataKey="actual" stroke="#0f172a" fill="#cbd5e1" />
-        <Area type="monotone" dataKey="forecast" stroke="#0284c7" fill="#7dd3fc" />
+        <Area type="monotone" dataKey="actual" stroke="#94a3b8" fill="rgba(148,163,184,0.24)" />
+        <Area type="monotone" dataKey="forecast" stroke="#22d3ee" fill="rgba(34,211,238,0.28)" />
       </AreaChart>
     </ResponsiveContainer>
   );
@@ -29,13 +29,12 @@ export function RiskBreakdownChart({
   return (
     <ResponsiveContainer width="100%" height={260}>
       <BarChart data={data}>
-        <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" />
-        <XAxis dataKey="name" stroke="#64748b" />
-        <YAxis stroke="#64748b" />
+        <CartesianGrid stroke="rgba(148,163,184,0.15)" strokeDasharray="3 3" />
+        <XAxis dataKey="name" stroke="#7e92b2" />
+        <YAxis stroke="#7e92b2" />
         <Tooltip />
-        <Bar dataKey="value" radius={[12, 12, 0, 0]} fill="#0ea5e9" />
+        <Bar dataKey="value" radius={[12, 12, 0, 0]} fill="#22d3ee" />
       </BarChart>
     </ResponsiveContainer>
   );
 }
-

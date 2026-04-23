@@ -63,7 +63,7 @@ export function AssistantPanel() {
         {quickPrompts.map((prompt) => (
           <button
             key={prompt}
-            className="rounded-full bg-slate-100 px-3 py-2 text-xs font-medium text-slate-700"
+            className="rounded-full bg-white/5 px-3 py-2 text-xs font-medium text-slate-200 ring-1 ring-white/8"
             onClick={() => submit(prompt)}
             type="button"
           >
@@ -71,9 +71,9 @@ export function AssistantPanel() {
           </button>
         ))}
       </div>
-      <div className="flex-1 space-y-4 overflow-y-auto rounded-3xl bg-slate-50 p-4">
+      <div className="flex-1 space-y-4 overflow-y-auto rounded-3xl bg-[rgba(4,9,18,0.62)] p-4 ring-1 ring-white/8">
         {error ? (
-          <div className="rounded-3xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+          <div className="rounded-3xl border border-rose-400/25 bg-rose-400/10 p-4 text-sm text-rose-200">
             {error}
           </div>
         ) : null}
@@ -82,8 +82,8 @@ export function AssistantPanel() {
             key={`${message.role}-${index}`}
             className={
               message.role === "assistant"
-                ? "mr-8 rounded-3xl bg-white p-4 text-sm text-slate-700 shadow-sm"
-                : "ml-8 rounded-3xl bg-slate-900 p-4 text-sm text-white"
+                ? "mr-8 rounded-3xl border border-white/8 bg-white/5 p-4 text-sm text-slate-200 shadow-sm"
+                : "ml-8 rounded-3xl bg-cyan-400 p-4 text-sm text-slate-950"
             }
           >
             {message.role === "assistant" && message.mode ? (
@@ -99,7 +99,7 @@ export function AssistantPanel() {
       </div>
       <div className="mt-4 flex gap-3">
         <textarea
-          className="min-h-24 flex-1 rounded-3xl border border-slate-200 bg-white px-4 py-3 outline-none ring-sky-200 transition focus:ring"
+          className="min-h-24 flex-1 rounded-3xl border border-white/8 bg-white/5 px-4 py-3 text-white outline-none ring-cyan-400/20 transition placeholder:text-slate-500 focus:ring"
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Ask for explanations, trends, or action recommendations..."
           value={query}

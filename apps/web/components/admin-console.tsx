@@ -1,12 +1,13 @@
 "use client";
 
 import { startTransition, useState } from "react";
-import { postIngestionEvent, runForecasts } from "@/lib/api";
+import { postIngestionEvent, runForecasts, uploadIngestionFile } from "@/lib/api";
 import { Badge, Button, Card, CardDescription, CardTitle } from "@supplychain/ui";
 
 export function AdminConsole() {
   const [forecastStatus, setForecastStatus] = useState<string>("Idle");
   const [ingestionStatus, setIngestionStatus] = useState<string>("Idle");
+  const [uploadStatus, setUploadStatus] = useState<string>("No file uploaded yet.");
   const [lastEvent, setLastEvent] = useState<string>("No event posted yet.");
   const [running, setRunning] = useState(false);
 
@@ -16,8 +17,8 @@ export function AdminConsole() {
       try {
         const result = await runForecasts();
         setForecastStatus(`Ran ${result.forecasts.length} forecasts successfully.`);
-      } catch {
-        setForecastStatus("Forecast run failed. Check Railway API logs.");
+      } catch (error) {
+        setForecastStatus(error instanceof Error ? error.message : "Forecast run failed. Check Railway API logs.");
       } finally {
         setRunning(false);
       }
@@ -41,8 +42,24 @@ export function AdminConsole() {
         const result = await postIngestionEvent(payload);
         setIngestionStatus(`Event accepted for ${result.entity}.`);
         setLastEvent(JSON.stringify(result.payload));
-      } catch {
-        setIngestionStatus("Ingestion event failed. Check API connectivity.");
+      } catch (error) {
+        setIngestionStatus(error instanceof Error ? error.message : "Ingestion event failed. Check API connectivity.");
+      } finally {
+        setRunning(false);
+      }
+    });
+  }
+
+  function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setRunning(true);
+    startTransition(async () => {
+      try {
+        const result = await uploadIngestionFile(file);
+        setUploadStatus(`Uploaded ${result.filename} (${result.bytes} bytes). Status: ${result.status}.`);
+      } catch (error) {
+        setUploadStatus(error instanceof Error ? error.message : "Upload failed.");
       } finally {
         setRunning(false);
       }
@@ -50,13 +67,13 @@ export function AdminConsole() {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
+    <div className="grid gap-6 xl:grid-cols-3">
       <Card className="space-y-4">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <CardTitle>Forecast control</CardTitle>
+            <CardTitle>Planning jobs</CardTitle>
             <CardDescription>
-              Trigger a live forecast run through the API instead of looking at a static admin screen.
+              Trigger a fresh forecasting cycle and push the latest planner outputs back into the workspace.
             </CardDescription>
           </div>
           <Badge variant="info">Action</Badge>
@@ -70,9 +87,9 @@ export function AdminConsole() {
       <Card className="space-y-4">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <CardTitle>Ingestion test</CardTitle>
+            <CardTitle>Data event post</CardTitle>
             <CardDescription>
-              Post a demo event into the ingestion API to verify the app is wired end to end.
+              Send an inventory update into the ingestion API and verify the backend is accepting operational events.
             </CardDescription>
           </div>
           <Badge variant="warning">Live API</Badge>
@@ -82,6 +99,23 @@ export function AdminConsole() {
         </Button>
         <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">{ingestionStatus}</div>
         <div className="rounded-2xl border border-slate-100 p-4 text-xs text-slate-500">{lastEvent}</div>
+      </Card>
+
+      <Card className="space-y-4">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <CardTitle>CSV or file intake</CardTitle>
+            <CardDescription>
+              Upload a file into the ingestion endpoint so teams can validate the intake pipeline from the UI.
+            </CardDescription>
+          </div>
+          <Badge variant="success">Upload</Badge>
+        </div>
+        <label className="rounded-2xl border border-dashed border-white/14 bg-white/5 px-4 py-8 text-center text-sm text-slate-300">
+          <input className="hidden" onChange={handleFileUpload} type="file" />
+          Choose a CSV or data file
+        </label>
+        <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">{uploadStatus}</div>
       </Card>
     </div>
   );

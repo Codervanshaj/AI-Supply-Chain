@@ -1,4 +1,5 @@
 import { AppShell } from "@/components/app-shell";
+import { InventoryWorkbench } from "@/components/inventory-workbench";
 import { InventoryTable } from "@/components/tables";
 import { getInventoryRecommendations } from "@/lib/api";
 import { Card, CardDescription, CardTitle, MetricCard } from "@supplychain/ui";
@@ -36,9 +37,10 @@ export default async function InventoryPage() {
         <Card className="space-y-3">
           <CardTitle>Inventory optimization</CardTitle>
           <CardDescription>
-            Reorder recommendations are now live on this page instead of placeholder content.
+            Buyers can filter the action queue and convert recommended quantities into a replenishment plan.
           </CardDescription>
         </Card>
+        <InventoryWorkbench rows={inventory} />
         <InventoryTable rows={inventory} />
       </div>
     </AppShell>

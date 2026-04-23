@@ -8,7 +8,7 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.4)] backdrop-blur",
+        "rounded-[1.75rem] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-6 shadow-[0_30px_90px_-45px_rgba(2,12,27,0.85)] backdrop-blur-xl",
         className,
       )}
     >
@@ -22,7 +22,7 @@ export function CardTitle({
   className,
 }: PropsWithChildren<{ className?: string }>) {
   return (
-    <h3 className={cn("text-base font-semibold tracking-tight text-slate-900", className)}>
+    <h3 className={cn("text-base font-semibold tracking-tight text-[var(--text-main)]", className)}>
       {children}
     </h3>
   );
@@ -32,6 +32,5 @@ export function CardDescription({
   children,
   className,
 }: PropsWithChildren<{ className?: string }>) {
-  return <p className={cn("text-sm text-slate-500", className)}>{children}</p>;
+  return <p className={cn("text-sm text-[var(--text-muted)]", className)}>{children}</p>;
 }
-
