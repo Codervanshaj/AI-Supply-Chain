@@ -22,17 +22,92 @@ def build_ai_context(session: Session, org_slug: str) -> dict:
 
 
 def _fallback_answer(query: str, context: dict) -> str:
+    query_lower = query.lower()
     top_inventory = context["inventory"][0] if context["inventory"] else None
     top_supplier = context["suppliers"][0] if context["suppliers"] else None
     top_logistics = context["logistics"][0] if context["logistics"] else None
+    top_maintenance = context["maintenance"][0] if context["maintenance"] else None
+    metric_map = {item["title"].lower(): item for item in context["metrics"]}
+
+    if any(term in query_lower for term in ["reorder", "inventory", "stock", "sku"]):
+        return dedent(
+            f"""
+            Based on the current inventory position, the top reorder candidate is {top_inventory['productName']} ({top_inventory['sku']}).
+
+            - Recommended quantity: {top_inventory['recommendedQuantity']}
+            - Urgency: {top_inventory['urgency']}
+            - Projected stockout date: {top_inventory['projectedStockoutDate']}
+            - Reason: {top_inventory['reasoning']}
+
+            Recommended action: convert this recommendation into a purchase order first, then review the next highest urgency SKU.
+            """
+        ).strip()
+
+    if any(term in query_lower for term in ["supplier", "vendor", "risk"]):
+        return dedent(
+            f"""
+            The highest supplier risk currently sits with {top_supplier['supplierName']}.
+
+            - Risk score: {top_supplier['riskScore']}
+            - Risk level: {top_supplier['riskLevel']}
+            - Recommendation: {top_supplier['recommendation']}
+
+            The fastest mitigation is to reduce dependency on this supplier while tightening delivery and quality review.
+            """
+        ).strip()
+
+    if any(term in query_lower for term in ["delay", "shipment", "logistics", "carrier", "route"]):
+        return dedent(
+            f"""
+            The most exposed shipment right now is {top_logistics['shipmentNumber']}.
+
+            - Delay probability: {top_logistics['delayProbability']}
+            - Risk level: {top_logistics['riskLevel']}
+            - Reason: {top_logistics['reasoning']}
+            - Suggested mitigation: {top_logistics['recommendation']}
+
+            If this lane matters to service level, escalate the carrier and secure contingency inventory now.
+            """
+        ).strip()
+
+    if any(term in query_lower for term in ["maintenance", "asset", "machine", "failure", "downtime"]):
+        return dedent(
+            f"""
+            The asset needing the fastest preventive action is {top_maintenance['assetName']}.
+
+            - Failure probability: {top_maintenance['failureProbability']}
+            - Risk level: {top_maintenance['riskLevel']}
+            - Explanation: {top_maintenance['explanation']}
+            - Next action: {top_maintenance['nextAction']}
+
+            The operational priority is to inspect this asset before the next downtime window compounds.
+            """
+        ).strip()
+
+    if any(term in query_lower for term in ["forecast", "demand", "trend", "seasonality"]):
+        forecast_confidence = metric_map.get("forecast confidence", {}).get("value", "n/a")
+        return dedent(
+            f"""
+            Demand signals are currently stable enough to plan against.
+
+            - Forecast confidence: {forecast_confidence}
+            - The current model view supports near-term replenishment planning.
+            - Inventory and supplier actions matter more right now than model uncertainty.
+
+            Best next step: use the Forecasting tab to run a fresh forecast cycle, then compare the what-if scenario before finalizing the buy plan.
+            """
+        ).strip()
+
     return dedent(
         f"""
-        Based on the current system state, here is the grounded recommendation for: "{query}"
+        Based on the current system state, here is the best direct answer I can give for: "{query}"
 
-        - Inventory: Prioritize {top_inventory['sku']} with recommended reorder quantity of {top_inventory['recommendedQuantity']} because available stock is below the forecast-adjusted reorder window.
-        - Suppliers: {top_supplier['supplierName']} is the top risk contributor due to delays and dependency concentration. Build alternate coverage and tighten performance review.
-        - Logistics: {top_logistics['shipmentNumber']} has the highest delay exposure. Expedite carrier follow-up and consider pulling contingency inventory.
-        - Why this matters: forecast confidence remains healthy, but action speed on replenishment and supplier mitigation will determine whether service levels hold.
+        - Inventory priority: {top_inventory['sku']} with {top_inventory['recommendedQuantity']} units recommended
+        - Supplier attention: {top_supplier['supplierName']} is the highest current supplier risk
+        - Logistics watch item: {top_logistics['shipmentNumber']} has the highest shipment delay exposure
+        - Maintenance watch item: {top_maintenance['assetName']} is the top preventive maintenance priority
+
+        If you want a more natural, ChatGPT-style answer to open-ended questions, the live OpenAI request needs to succeed. Right now this response is coming from fallback mode using your system data.
         """
     ).strip()
 
