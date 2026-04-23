@@ -48,36 +48,40 @@ def answer_query(session: Session, org_slug: str, user_id: str, payload: AIQuery
     answer = _fallback_answer(payload.query, context)
     mode = "fallback"
     if settings.openai_api_key:
-        client = OpenAI(api_key=settings.openai_api_key)
-        response = client.responses.create(
-            model=settings.openai_model,
-            input=[
-                {
-                    "role": "system",
-                    "content": [
-                        {
-                            "type": "input_text",
-                            "text": (
-                                "You are a supply chain operations copilot. Use only the provided structured context. "
-                                "Explain predictions, recommend actions, and include the reason behind each recommendation."
-                            ),
-                        }
-                    ],
-                },
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "input_text",
-                            "text": f"Context: {context}\n\nQuestion: {payload.query}",
-                        }
-                    ],
-                },
-            ],
-        )
-        answer = getattr(response, "output_text", None) or answer
-        if getattr(response, "output_text", None):
-            mode = "openai"
+        try:
+            client = OpenAI(api_key=settings.openai_api_key)
+            response = client.responses.create(
+                model=settings.openai_model,
+                input=[
+                    {
+                        "role": "system",
+                        "content": [
+                            {
+                                "type": "input_text",
+                                "text": (
+                                    "You are a supply chain operations copilot. Use only the provided structured context. "
+                                    "Explain predictions, recommend actions, and include the reason behind each recommendation."
+                                ),
+                            }
+                        ],
+                    },
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "input_text",
+                                "text": f"Context: {context}\n\nQuestion: {payload.query}",
+                            }
+                        ],
+                    },
+                ],
+            )
+            answer = getattr(response, "output_text", None) or answer
+            if getattr(response, "output_text", None):
+                mode = "openai"
+        except Exception as exc:
+            answer = f"{answer}\n\nLive OpenAI request failed, so fallback mode was used. Reason: {exc}"
+            mode = "fallback"
 
     session.add(AIMessage(conversation_id=conversation.id, role="assistant", content=answer))
     session.commit()
