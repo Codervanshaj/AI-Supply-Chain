@@ -4,7 +4,7 @@ import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@cl
 import { cn } from "@supplychain/ui";
 
 const nav = [
-  { href: "/", label: "Overview", icon: ChartColumnIncreasing },
+  { href: "/dashboard", label: "Overview", icon: ChartColumnIncreasing },
   { href: "/forecasting", label: "Forecasting", icon: ChartColumnIncreasing },
   { href: "/inventory", label: "Inventory", icon: Package },
   { href: "/suppliers", label: "Suppliers", icon: ShieldAlert },

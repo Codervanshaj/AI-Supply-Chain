@@ -262,3 +262,19 @@ export async function getSystemStatus() {
     };
   }
 }
+
+export async function runForecasts() {
+  return fetcher<{ forecasts: ForecastApiResult[] }>("/forecast/run", {
+    method: "POST",
+  });
+}
+
+export async function postIngestionEvent(payload: {
+  entity: string;
+  payload: Record<string, unknown>;
+}) {
+  return fetcher<{ status: string; entity: string; payload: Record<string, unknown> }>("/ingestion/events", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
