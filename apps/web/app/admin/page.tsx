@@ -20,6 +20,7 @@ export default async function AdminPage() {
                 ["API", status.apiStatus === "ok"],
                 ["Database", status.databaseConfigured],
                 ["Redis", status.redisConfigured],
+                ["Gemini", status.geminiConfigured],
                 ["OpenAI", status.openaiConfigured],
                 ["Clerk", status.clerkConfigured],
               ].map(([label, enabled]) => (

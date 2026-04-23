@@ -26,6 +26,7 @@ class SystemStatusResponse(BaseModel):
     apiStatus: str
     environment: str
     openaiConfigured: bool
+    geminiConfigured: bool
     clerkConfigured: bool
     databaseConfigured: bool
     redisConfigured: bool

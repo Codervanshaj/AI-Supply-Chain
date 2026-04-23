@@ -286,6 +286,7 @@ export async function getSystemStatus() {
       apiStatus: "degraded",
       environment: "unknown",
       openaiConfigured: false,
+      geminiConfigured: false,
       clerkConfigured: Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY),
       databaseConfigured: false,
       redisConfigured: false,

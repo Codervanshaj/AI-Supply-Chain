@@ -122,7 +122,26 @@ def answer_query(session: Session, org_slug: str, user_id: str, payload: AIQuery
 
     answer = _fallback_answer(payload.query, context)
     mode = "fallback"
-    if settings.openai_api_key:
+    if settings.gemini_api_key:
+        try:
+            from google import genai
+
+            client = genai.Client(api_key=settings.gemini_api_key)
+            response = client.models.generate_content(
+                model=settings.gemini_model,
+                contents=(
+                    "You are a supply chain operations copilot. Answer naturally like a helpful assistant, "
+                    "but stay grounded in the provided business context when relevant.\n\n"
+                    f"Context: {context}\n\nUser question: {payload.query}"
+                ),
+            )
+            answer = getattr(response, "text", None) or answer
+            if getattr(response, "text", None):
+                mode = "gemini"
+        except Exception as exc:
+            answer = f"{answer}\n\nLive Gemini request failed, so fallback mode was used. Reason: {exc}"
+            mode = "fallback"
+    elif settings.openai_api_key:
         try:
             client = OpenAI(api_key=settings.openai_api_key)
             response = client.responses.create(

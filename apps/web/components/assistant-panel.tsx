@@ -89,7 +89,13 @@ export function AssistantPanel() {
             {message.role === "assistant" && message.mode ? (
               <div className="mb-2">
                 <Badge variant={message.mode === "openai" ? "success" : message.mode === "fallback" ? "warning" : "info"}>
-                  {message.mode === "openai" ? "Live OpenAI" : message.mode === "fallback" ? "Fallback Mode" : "System"}
+                  {message.mode === "gemini"
+                    ? "Live Gemini"
+                    : message.mode === "openai"
+                      ? "Live OpenAI"
+                      : message.mode === "fallback"
+                        ? "Fallback Mode"
+                        : "System"}
                 </Badge>
               </div>
             ) : null}

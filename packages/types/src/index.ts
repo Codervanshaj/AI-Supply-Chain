@@ -201,6 +201,7 @@ export interface SystemStatus {
   apiStatus: string;
   environment: string;
   openaiConfigured: boolean;
+  geminiConfigured: boolean;
   clerkConfigured: boolean;
   databaseConfigured: boolean;
   redisConfigured: boolean;

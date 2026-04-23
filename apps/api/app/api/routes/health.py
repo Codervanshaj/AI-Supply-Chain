@@ -18,6 +18,7 @@ def system_status():
             apiStatus="ok",
             environment=settings.environment,
             openaiConfigured=bool(settings.openai_api_key),
+            geminiConfigured=bool(settings.gemini_api_key),
             clerkConfigured=bool(settings.clerk_secret_key),
             databaseConfigured=bool(settings.database_url),
             redisConfigured=bool(settings.redis_url),
