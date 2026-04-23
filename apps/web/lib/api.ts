@@ -31,6 +31,26 @@ async function fetcher<T>(path: string, init?: RequestInit): Promise<T> {
   return payload.data;
 }
 
+async function appFetcher<T>(path: string, init?: RequestInit): Promise<T> {
+  const headers = new Headers(init?.headers);
+  if (!headers.has("Content-Type") && !(init?.body instanceof FormData)) {
+    headers.set("Content-Type", "application/json");
+  }
+
+  const response = await fetch(path, {
+    ...init,
+    headers,
+  }).catch(() => null);
+
+  if (!response || !response.ok) {
+    const errorText = response ? await response.text().catch(() => "") : "";
+    throw new Error(errorText || `Failed to fetch ${path}`);
+  }
+
+  const payload = (await response.json()) as ApiEnvelope<T>;
+  return payload.data;
+}
+
 export async function getDashboardSummary() {
   try {
     return await fetcher<{
@@ -160,7 +180,7 @@ export async function getDashboardInsights() {
 
 export async function queryAssistant(query: string) {
   const payload: AIQueryRequest = { query };
-  return fetcher<{ answer: string; mode: string }>("/ai/query", {
+  return appFetcher<{ answer: string; mode: string }>("/api/ai/query", {
     method: "POST",
     body: JSON.stringify(payload),
   });
@@ -265,7 +285,7 @@ export async function getSystemStatus() {
 }
 
 export async function runForecasts() {
-  return fetcher<{ forecasts: ForecastApiResult[] }>("/forecast/run", {
+  return appFetcher<{ forecasts: ForecastApiResult[] }>("/api/forecast/run", {
     method: "POST",
   });
 }
@@ -274,7 +294,7 @@ export async function postIngestionEvent(payload: {
   entity: string;
   payload: Record<string, unknown>;
 }) {
-  return fetcher<{ status: string; entity: string; payload: Record<string, unknown> }>("/ingestion/events", {
+  return appFetcher<{ status: string; entity: string; payload: Record<string, unknown> }>("/api/ingestion/events", {
     method: "POST",
     body: JSON.stringify(payload),
   });
@@ -284,7 +304,7 @@ export async function uploadIngestionFile(file: File) {
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await fetch(`${API_BASE_URL}/ingestion/upload`, {
+  const response = await fetch("/api/ingestion/upload", {
     method: "POST",
     body: formData,
   }).catch(() => null);
