@@ -3,6 +3,8 @@ import { SupplierRiskTable } from "@/components/tables";
 import { getSupplierRisk } from "@/lib/api";
 import { Badge, Card, CardDescription, CardTitle } from "@supplychain/ui";
 
+export const dynamic = "force-dynamic";
+
 export default async function SuppliersPage() {
   const suppliers = await getSupplierRisk();
 

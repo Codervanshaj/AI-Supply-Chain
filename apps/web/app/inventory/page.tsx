@@ -4,6 +4,8 @@ import { InventoryTable } from "@/components/tables";
 import { getInventoryRecommendations } from "@/lib/api";
 import { Card, CardDescription, CardTitle, MetricCard } from "@supplychain/ui";
 
+export const dynamic = "force-dynamic";
+
 export default async function InventoryPage() {
   const inventory = await getInventoryRecommendations();
   const critical = inventory.filter((item) => item.urgency === "critical").length;

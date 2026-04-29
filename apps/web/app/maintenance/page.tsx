@@ -3,6 +3,8 @@ import { PredictionStack } from "@/components/tables";
 import { getMaintenancePredictions } from "@/lib/api";
 import { Card, CardDescription, CardTitle, MetricCard } from "@supplychain/ui";
 
+export const dynamic = "force-dynamic";
+
 export default async function MaintenancePage() {
   const maintenance = await getMaintenancePredictions();
 

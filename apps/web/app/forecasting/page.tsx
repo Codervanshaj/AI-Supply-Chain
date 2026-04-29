@@ -3,6 +3,8 @@ import { ForecastStudio } from "@/components/forecast-studio";
 import { getForecasts } from "@/lib/api";
 import { Badge, Card, CardDescription, CardTitle } from "@supplychain/ui";
 
+export const dynamic = "force-dynamic";
+
 export default async function ForecastingPage() {
   const data = await getForecasts();
 

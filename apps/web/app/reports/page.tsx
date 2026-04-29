@@ -2,6 +2,8 @@ import { AppShell } from "@/components/app-shell";
 import { getReports } from "@/lib/api";
 import { Badge, Card, CardDescription, CardTitle } from "@supplychain/ui";
 
+export const dynamic = "force-dynamic";
+
 export default async function ReportsPage() {
   const reports = await getReports();
 
